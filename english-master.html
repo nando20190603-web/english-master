@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="英語マスター">
+<title>英語マスター</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0F1F3D;--sub:#5A7099;
+  --green2:#047857;--mint:#10B981;--coral:#F43F5E;--amber:#F59E0B;
+  --teal:#0D9488;--teal2:#0F766E;
+  --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);
+}
+html{height:100%;-webkit-text-size-adjust:none}
+body{
+  min-height:100%;font-family:'Noto Sans JP','Nunito',sans-serif;
+  background:linear-gradient(135deg,#ECFDF5 0%,#F0FDFA 50%,#EFF6FF 100%);
+  color:var(--ink);
+  padding:var(--sat) var(--sar) var(--sab) var(--sal);
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+input,textarea{user-select:text;-webkit-user-select:text}
+
+/* ── SCREEN ── */
+.screen{display:none;width:100%}
+.screen.active{display:flex}
+
+/* ================================================================ PORTAL ================================================================ */
+#portal{flex-direction:column;min-height:100vh}
+.portal-brand{
+  background:linear-gradient(160deg,#059669 0%,#0D9488 100%);
+  display:flex;flex-direction:row;align-items:center;
+  gap:14px;padding:18px 20px;position:relative;overflow:hidden;flex-shrink:0;
+}
+.portal-brand::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.07)}
+.portal-brand::after{content:'';position:absolute;bottom:-30px;left:-30px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.05)}
+.brand-icon{font-size:42px;flex-shrink:0;position:relative;z-index:1;
+  animation:float 3s ease-in-out infinite;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.25))}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+.brand-text{position:relative;z-index:1;flex:1;min-width:0}
+.brand-title{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;color:#fff;line-height:1.2}
+.brand-sub{font-size:11px;color:rgba(255,255,255,.75);line-height:1.5;margin-top:2px}
+.stat-chips{display:flex;gap:7px;flex-wrap:wrap;position:relative;z-index:1;flex-shrink:0}
+.chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:50px;padding:5px 10px;text-align:center}
+.chip-num{font-size:16px;font-weight:900;color:#fff;line-height:1}
+.chip-label{font-size:9px;color:rgba(255,255,255,.7);margin-top:1px}
+.portal-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 18px;gap:18px}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sub);width:100%;max-width:420px}
+.curriculum-pills{display:flex;gap:6px;flex-wrap:wrap;width:100%;max-width:420px}
+.pill{padding:4px 11px;border-radius:50px;font-size:11px;font-weight:700}
+.pill-1{background:#ECFDF5;color:#065F46;border:2px solid #A7F3D0}
+.pill-2{background:#F0FDFA;color:#0F766E;border:2px solid #99F6E4}
+.pill-3{background:#EFF6FF;color:#1D4ED8;border:2px solid #BFDBFE}
+.pill-4{background:#F5F3FF;color:#6D28D9;border:2px solid #DDD6FE}
+.btn-group{display:flex;flex-direction:column;gap:10px;width:100%;max-width:420px}
+.portal-note{font-size:11px;color:#94A3B8;text-align:center;line-height:1.7;max-width:420px;width:100%}
+
+/* ================================================================ BUTTONS ================================================================ */
+.btn{
+  min-height:50px;width:100%;border:none;border-radius:13px;
+  font-family:'Nunito','Noto Sans JP',sans-serif;font-size:16px;font-weight:800;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:transform .13s cubic-bezier(.34,1.56,.64,1),box-shadow .13s;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+}
+.btn:active{transform:scale(.95)!important}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn-start{background:linear-gradient(135deg,#10B981,#059669);color:#fff;box-shadow:0 4px 16px rgba(5,150,105,.4)}
+.btn-analysis{background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;box-shadow:0 4px 16px rgba(13,148,136,.3)}
+.btn-ghost{background:#fff;color:var(--coral);border:2px solid #FECDD3}
+.btn-sm{min-height:44px;width:auto;padding:0 20px;border-radius:50px;font-size:14px}
+.btn-submit{background:linear-gradient(135deg,#10B981,#059669);color:#fff;box-shadow:0 3px 12px rgba(16,185,129,.4)}
+.btn-next{background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;box-shadow:0 3px 12px rgba(13,148,136,.38)}
+.btn-close-r{width:40px;height:40px;border-radius:50%;background:#F1F5F9;border:none;font-size:16px;color:var(--sub);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-close-r:active{background:#E2E8F0}
+
+/* ================================================================ LOADING ================================================================ */
+#loading{flex-direction:column;align-items:center;justify-content:center;gap:24px;min-height:100vh}
+.dots{display:flex;gap:10px}
+.dot{width:13px;height:13px;border-radius:50%;animation:jump 1.1s ease-in-out infinite}
+.dot:nth-child(1){background:var(--mint);animation-delay:0s}
+.dot:nth-child(2){background:var(--teal);animation-delay:.18s}
+.dot:nth-child(3){background:#60A5FA;animation-delay:.36s}
+@keyframes jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.loading-msg{font-size:17px;font-weight:700;color:var(--green2);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* ================================================================ QUIZ（スマホ：縦積み） ================================================================ */
+#quiz{flex-direction:column;min-height:100vh}
+.quiz-bar{
+  background:#fff;padding:10px 15px;
+  display:flex;align-items:center;gap:11px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);z-index:10;flex-shrink:0;
+  position:sticky;top:0;
+}
+.prog-track{flex:1;height:9px;background:#E2E8F0;border-radius:9px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#34D399,#059669);border-radius:9px;transition:width .4s ease}
+.quiz-num{font-size:13px;font-weight:800;color:var(--green2);min-width:36px;text-align:right}
+.quiz-body{flex:1;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.q-panel{padding:18px 16px 14px;display:flex;flex-direction:column;background:transparent;border-bottom:2px solid rgba(16,185,129,.15)}
+.topic-tag{display:inline-flex;align-items:center;gap:6px;background:#ECFDF5;border-radius:50px;padding:4px 11px;margin-bottom:11px;width:fit-content;border:1.5px solid #A7F3D0}
+.tag-dot{width:7px;height:7px;border-radius:50%;background:var(--green2);animation:blink 2s infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.tag-name{font-size:11px;font-weight:700;color:var(--green2)}
+.tag-type{font-size:10px;background:#D1FAE5;color:var(--green2);padding:2px 7px;border-radius:7px;font-weight:700}
+.q-text{font-size:clamp(15px,4.2vw,22px);font-weight:700;line-height:1.8;white-space:pre-wrap;color:var(--ink)}
+.q-hint{margin-top:11px;font-size:12px;color:var(--sub);background:#FFFBEB;border-left:3px solid var(--amber);padding:8px 12px;border-radius:0 8px 8px 0;line-height:1.6}
+.q-example{margin-top:9px;font-size:12px;color:#065F46;background:#ECFDF5;border-left:3px solid var(--mint);padding:8px 12px;border-radius:0 8px 8px 0;line-height:1.6}
+.a-panel{padding:14px 16px 20px;display:flex;flex-direction:column;gap:11px;background:rgba(255,255,255,.7);flex:1}
+.a-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+.input-eng{
+  font-family:'Nunito',sans-serif;font-size:22px;font-weight:800;color:var(--ink);
+  border:3px solid #A7F3D0;border-radius:13px;padding:14px 16px;
+  background:#fff;outline:none;width:100%;
+  transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;
+}
+.input-eng:focus{border-color:var(--mint);box-shadow:0 0 0 4px rgba(16,185,129,.18)}
+.input-desc{
+  font-family:'Noto Sans JP',sans-serif;font-size:15px;color:var(--ink);
+  border:3px solid #A7F3D0;border-radius:13px;padding:13px 15px;
+  background:#fff;outline:none;resize:none;line-height:1.75;
+  width:100%;min-height:90px;
+  transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;
+}
+.input-desc:focus{border-color:var(--mint);box-shadow:0 0 0 4px rgba(16,185,129,.18)}
+input:disabled,textarea:disabled{background:#F8FAFC;color:var(--sub)}
+.a-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.remain-badge{background:#fff;border:2px solid #A7F3D0;border-radius:50px;padding:5px 11px;font-size:11px;font-weight:700;color:var(--sub);display:flex;align-items:center;gap:3px;flex-shrink:0}
+.remain-num{font-size:17px;font-weight:900;color:var(--green2)}
+
+/* ================================================================ OVERLAY ================================================================ */
+.overlay{
+  position:fixed;inset:0;background:rgba(15,31,61,.55);
+  display:none;align-items:flex-end;justify-content:center;
+  z-index:200;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  animation:fadeIn .18s ease;
+}
+.overlay.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fb-card{
+  background:#fff;border-radius:22px 22px 0 0;
+  padding:26px 20px 30px;width:100%;max-width:600px;
+  box-shadow:0 -8px 40px rgba(0,0,0,.2);
+  animation:slideUp .28s cubic-bezier(.34,1.56,.64,1);
+  max-height:85vh;overflow-y:auto;
+}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:translateY(0);opacity:1}}
+.fb-icon{font-size:42px;text-align:center;display:block;margin-bottom:9px}
+.fb-title{font-size:21px;font-weight:900;text-align:center;margin-bottom:11px}
+.fb-title.ok{color:var(--mint)}.fb-title.ng{color:var(--coral)}
+.fb-box{background:#F0FFF8;border-radius:11px;padding:11px 14px;font-size:13px;line-height:1.75;margin-bottom:10px;color:var(--ink)}
+.fb-box strong{color:var(--green2)}
+.fb-comment{background:#FFFBEB;border-radius:11px;padding:11px 14px;font-size:13px;line-height:1.8;margin-bottom:14px;color:var(--ink)}
+.fb-comment::before{content:'💬 '}
+.fb-foot{display:flex;justify-content:stretch}
+.fb-foot .btn-sm{flex:1;min-height:50px;border-radius:13px;font-size:16px}
+
+/* ================================================================ RESULT（スマホ：縦積み） ================================================================ */
+#result{flex-direction:column;align-items:center;min-height:100vh;padding:30px 18px;gap:18px}
+.result-left{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+.result-right{display:flex;flex-direction:column;align-items:center;gap:13px;width:100%}
+.score-ring{width:120px;height:120px;border-radius:50%;border:6px solid var(--green2);background:linear-gradient(135deg,#ECFDF5,#F0FDFA);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(5,150,105,.2)}
+.score-big{font-size:34px;font-weight:900;color:var(--green2);line-height:1}
+.score-unit{font-size:15px}
+.score-sub{font-size:10px;color:var(--sub);margin-top:3px}
+.score-detail{display:flex;gap:18px}
+.sd-item{text-align:center}
+.sd-num{font-size:21px;font-weight:900}
+.sd-num.ok{color:var(--mint)}.sd-num.ng{color:var(--coral)}
+.sd-label{font-size:10px;color:var(--sub);margin-top:2px}
+.result-msg{background:linear-gradient(135deg,#ECFDF5,#EFF6FF);border-radius:16px;padding:16px 18px;text-align:center;max-width:400px;width:100%}
+.r-emoji{font-size:38px;display:block;margin-bottom:7px}
+.r-title{font-size:17px;font-weight:900;color:var(--ink)}
+.r-sub{font-size:11px;color:var(--sub);margin-top:6px;line-height:1.65}
+.result-btns{display:flex;flex-direction:column;gap:9px;width:100%;max-width:400px}
+
+/* ================================================================ ANALYSIS（スマホ：縦積み） ================================================================ */
+#analysis{flex-direction:column;min-height:100vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.analysis-inner{display:flex;flex-direction:column;gap:14px;padding:18px 16px 32px;width:100%}
+.analysis-col{display:flex;flex-direction:column;gap:14px}
+.sec-title{font-size:15px;font-weight:900;background:linear-gradient(135deg,var(--green2),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chart-box{background:#fff;border-radius:13px;padding:15px;box-shadow:0 2px 10px rgba(0,0,0,.07)}
+.chart-title{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:11px}
+.day-bars{display:flex;align-items:flex-end;gap:6px;height:72px}
+.day-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;height:100%;justify-content:flex-end}
+.day-bar{width:100%;max-width:28px;border-radius:5px 5px 0 0;background:linear-gradient(180deg,#34D399,#059669);min-height:4px;transition:height .7s cubic-bezier(.34,1.56,.64,1)}
+.day-lbl{font-size:9px;font-weight:700;color:var(--sub)}
+.tb-list{display:flex;flex-direction:column;gap:9px}
+.tb-row{display:flex;align-items:center;gap:7px}
+.tb-name{font-size:10px;font-weight:700;color:var(--sub);width:68px;flex-shrink:0;text-align:right}
+.tb-track{flex:1;height:14px;background:#F1F5F9;border-radius:7px;overflow:hidden;position:relative}
+.tb-ok{height:100%;background:linear-gradient(90deg,#34D399,#059669);border-radius:7px;transition:width .9s cubic-bezier(.34,1.56,.64,1)}
+.tb-ng{position:absolute;top:0;height:100%;background:linear-gradient(90deg,#FB7185,#E11D48);border-radius:7px;opacity:.75}
+.tb-pct{font-size:10px;font-weight:700;color:var(--ink);width:26px;text-align:right}
+.wt-list{display:flex;flex-direction:column;gap:6px}
+.wt-row{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:#F0FFF8;border-radius:9px}
+.wt-name{font-size:12px;font-weight:700;color:var(--ink)}
+.wt-badge{font-size:10px;font-weight:800;padding:3px 10px;border-radius:15px;color:#fff}
+.wt-hi{background:var(--coral)}.wt-md{background:var(--teal2)}.wt-lo{background:var(--mint)}
+.no-data{font-size:12px;color:var(--sub);text-align:center;padding:11px 0}
+.note-txt{font-size:10px;color:#94A3B8;line-height:1.6;margin-top:7px}
+.save-note{font-size:11px;color:#059669;text-align:center;background:#ECFDF5;border-radius:8px;padding:7px 12px}
+
+/* ================================================================ TABLET / DESKTOP (≥640px) ================================================================ */
+@media(min-width:640px){
+  /* ポータル：サイドバー型 */
+  #portal{flex-direction:row;height:100vh;overflow:hidden}
+  .portal-brand{width:300px;flex-shrink:0;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 22px;height:100%}
+  .brand-icon{font-size:56px}
+  .brand-title{font-size:26px;text-align:center}
+  .brand-sub{text-align:center}
+  .stat-chips{justify-content:center}
+  .portal-main{padding:36px 32px;overflow-y:auto}
+
+  /* クイズ：左右2ペイン */
+  #quiz{height:100vh;overflow:hidden}
+  .quiz-body{flex-direction:row;overflow:hidden;flex:1}
+  .q-panel{flex:1;padding:26px 30px;justify-content:center;overflow-y:auto;border-bottom:none;border-right:2px solid rgba(16,185,129,.18)}
+  .a-panel{flex:0 0 44%;padding:22px 26px;overflow-y:auto;justify-content:center}
+  .input-eng{font-size:24px;width:240px;margin:0 auto;text-align:center}
+  .input-desc{min-height:100px}
+
+  /* 結果：横並び */
+  #result{flex-direction:row;justify-content:center;padding:0;height:100vh;gap:0}
+  .result-left{flex:1;justify-content:center;padding:36px 24px;border-right:2px solid rgba(16,185,129,.15);height:100%}
+  .result-right{flex:1;justify-content:center;padding:36px 24px;height:100%}
+
+  /* 分析：2カラム */
+  #analysis{flex-direction:row;height:100vh;overflow:hidden}
+  .analysis-inner{flex-direction:row;padding:0;gap:0;flex:1;overflow:hidden;height:100%}
+  .analysis-col{flex:1;padding:22px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .analysis-col:first-child{border-right:2px solid rgba(16,185,129,.12)}
+
+  /* フィードバック：中央ポップアップ */
+  .overlay{align-items:center;padding:20px}
+  .fb-card{border-radius:22px;max-width:480px;max-height:none;
+    animation:popUp .26s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes popUp{from{transform:scale(.87) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+  .fb-foot{justify-content:flex-end}
+  .fb-foot .btn-sm{flex:0 0 auto;min-height:46px;border-radius:50px}
+}
+
+@media(min-width:960px){
+  .portal-brand{width:360px}
+  .q-text{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ポータル -->
+<div id="portal" class="screen active">
+  <div class="portal-brand">
+    <div class="brand-icon">📖</div>
+    <div class="brand-text">
+      <div class="brand-title">英語マスター</div>
+      <div class="brand-sub">中学1年生 4〜7月<br>毎日ちがう問題で実力アップ！</div>
+    </div>
+    <div class="stat-chips" id="stat-chips" style="display:none">
+      <div class="chip"><div class="chip-num" id="st-session">0</div><div class="chip-label">セッション</div></div>
+      <div class="chip"><div class="chip-num" id="st-rate">--%</div><div class="chip-label">正解率</div></div>
+      <div class="chip"><div class="chip-num" id="st-total">0</div><div class="chip-label">累計正解</div></div>
+    </div>
+  </div>
+  <div class="portal-main">
+    <div class="section-label">📚 今日の学習範囲</div>
+    <div class="curriculum-pills">
+      <span class="pill pill-1">基本表現（4月）</span>
+      <span class="pill pill-2">be動詞・一般動詞（5月）</span>
+      <span class="pill pill-3">疑問文・複数形（6月）</span>
+      <span class="pill pill-4">代名詞・can・命令文（7月）</span>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-start" onclick="startSession()">✏️ 学習を開始する</button>
+      <button class="btn btn-analysis" onclick="showAnalysis()">📊 分析結果を見る</button>
+    </div>
+    <div class="portal-note">
+      基礎10問＋応用10問 · 全75問収録<br>
+      苦手単元は自動で出題数が増えます<br>
+      <span style="color:#059669">💾 学習データはこのデバイスに保存されます</span>
+    </div>
+  </div>
+</div>
+
+<!-- ローディング -->
+<div id="loading" class="screen">
+  <span style="font-size:52px">🎯</span>
+  <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  <div class="loading-msg" id="loading-msg">問題を準備中...</div>
+</div>
+
+<!-- クイズ -->
+<div id="quiz" class="screen">
+  <div class="quiz-bar">
+    <button class="btn-close-r" onclick="stopSession()">✕</button>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="quiz-num" id="quiz-num">1/20</div>
+  </div>
+  <div class="quiz-body">
+    <div class="q-panel">
+      <div class="topic-tag">
+        <div class="tag-dot"></div>
+        <span class="tag-name" id="tag-name">単元</span>
+        <span class="tag-type" id="tag-type">基礎</span>
+      </div>
+      <div class="q-text" id="q-text">問題文</div>
+      <div class="q-hint" id="q-hint" style="display:none"></div>
+      <div class="q-example" id="q-example" style="display:none"></div>
+    </div>
+    <div class="a-panel">
+      <div class="a-label">解答欄</div>
+      <input class="input-eng" id="input-eng" type="text" inputmode="text"
+        placeholder="答えを入力" autocomplete="off" autocorrect="off"
+        autocapitalize="none" spellcheck="false">
+      <textarea class="input-desc" id="input-desc"
+        placeholder="答えを入力してください..." style="display:none"
+        autocorrect="off" autocapitalize="none" spellcheck="false"></textarea>
+      <div class="a-footer">
+        <div class="remain-badge">残り <span class="remain-num" id="remain-num">19</span> 問</div>
+        <button class="btn btn-sm btn-submit" id="btn-submit" onclick="submitAnswer()">回答する ✓</button>
+        <button class="btn btn-sm btn-next" id="btn-next" onclick="nextQuestion()" style="display:none">次の問題へ →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- フィードバックオーバーレイ -->
+<div class="overlay" id="overlay">
+  <div class="fb-card">
+    <span class="fb-icon" id="fb-icon">🌟</span>
+    <div class="fb-title" id="fb-title">正解！</div>
+    <div class="fb-box">
+      <div><strong>正解：</strong><span id="fb-correct"></span></div>
+      <div style="margin-top:6px;color:#5A7099"><strong>あなたの回答：</strong><span id="fb-user"></span></div>
+    </div>
+    <div class="fb-comment" id="fb-comment"></div>
+    <div class="fb-foot">
+      <button class="btn btn-sm btn-next" id="fb-next-btn" onclick="nextQuestion()">次の問題へ →</button>
+    </div>
+  </div>
+</div>
+
+<!-- 結果 -->
+<div id="result" class="screen">
+  <div class="result-left">
+    <div class="score-ring">
+      <div class="score-big"><span id="res-rate">0</span><span class="score-unit">%</span></div>
+      <div class="score-sub" id="res-sub">0/20問正解</div>
+    </div>
+    <div class="score-detail">
+      <div class="sd-item"><div class="sd-num ok" id="res-basic">0/10</div><div class="sd-label">基礎</div></div>
+      <div class="sd-item"><div class="sd-num ok" id="res-applied">0/10</div><div class="sd-label">応用</div></div>
+      <div class="sd-item"><div class="sd-num ng" id="res-wrong">0</div><div class="sd-label">要復習</div></div>
+    </div>
+  </div>
+  <div class="result-right">
+    <div class="result-msg">
+      <span class="r-emoji" id="r-emoji">🌟</span>
+      <div class="r-title" id="r-title">すばらしい！</div>
+      <div class="r-sub">今日も学習お疲れさまでした！<br>毎日続けることが力になります。</div>
+    </div>
+    <div class="result-btns">
+      <button class="btn btn-start" onclick="startSession()">🔄 もう一度挑戦する</button>
+      <button class="btn btn-analysis" onclick="showAnalysis()">📊 週次分析を見る</button>
+      <button class="btn btn-ghost" onclick="showScreen('portal');updatePortalStats()">← ポータルに戻る</button>
+    </div>
+  </div>
+</div>
+
+<!-- 分析 -->
+<div id="analysis" class="screen">
+  <div class="analysis-inner">
+    <div class="analysis-col">
+      <div class="sec-title">📊 週次分析レポート</div>
+      <div class="chart-box">
+        <div class="chart-title">📅 日別 正解数</div>
+        <div class="day-bars" id="day-bars"><div class="no-data">まだデータがありません</div></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">📚 単元別 正解率</div>
+        <div class="tb-list" id="topic-bars"><div class="no-data">まだデータがありません</div></div>
+      </div>
+    </div>
+    <div class="analysis-col">
+      <div class="sec-title">⚖️ 次回の出題バランス</div>
+      <div class="chart-box">
+        <div class="chart-title">自動調整された出題ウェイト</div>
+        <div class="wt-list" id="wt-list"></div>
+        <div class="note-txt">※ 正解率が低い単元は次回のセッションで多く出題されます</div>
+      </div>
+      <div class="save-note">💾 データはこのデバイスに自動保存されています</div>
+      <button class="btn btn-start" style="max-width:280px" onclick="showScreen('portal');updatePortalStats()">← ポータルに戻る</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- #app -->
+
+<script>
+const QB=[
+  {id:1,topic:"基本表現",sub:"あいさつ表現",type:"basic",qType:"calc",text:"「こんにちは、私はサクラです。」を英語で書きなさい。",answer:"Hello, I am Sakura.",judge:"text",hint:"Hello, I am 〜. の形を使います"},
+  {id:2,topic:"基本表現",sub:"あいさつ表現",type:"basic",qType:"calc",text:"「はじめまして。」を英語で書きなさい。",answer:"Nice to meet you.",judge:"text"},
+  {id:3,topic:"基本表現",sub:"あいさつ表現",type:"basic",qType:"calc",text:"「おはようございます。」を英語で書きなさい。",answer:"Good morning.",judge:"text"},
+  {id:4,topic:"基本表現",sub:"あいさつ表現",type:"basic",qType:"calc",text:"「ありがとう。」を英語で書きなさい。",answer:"Thank you.",judge:"text"},
+  {id:5,topic:"基本表現",sub:"あいさつ表現",type:"basic",qType:"calc",text:"\"Good afternoon.\" を日本語にしなさい。",answer:"こんにちは",judge:"text"},
+  {id:6,topic:"基本表現",sub:"あいさつ表現",type:"basic",qType:"calc",text:"\"Good evening.\" を日本語にしなさい。",answer:"こんばんは",judge:"text"},
+  {id:7,topic:"基本表現",sub:"あいさつ表現",type:"applied",qType:"desc",text:"「あなたの名前は何ですか？」「私の名前はケンです。」の会話を英語で書きなさい。",answer:"What is your name? My name is Ken.",judge:"text",hint:"What is your name? / My name is 〜."},
+  {id:8,topic:"基本表現",sub:"あいさつ表現",type:"applied",qType:"desc",text:"「あなたはどこの出身ですか？」を英語で書きなさい。",answer:"Where are you from?",judge:"text"},
+  {id:9,topic:"be動詞",sub:"be動詞の基本",type:"basic",qType:"calc",text:"（　）に入る正しいbe動詞を書きなさい。\nI （　） a student.",answer:"am",judge:"text"},
+  {id:10,topic:"be動詞",sub:"be動詞の基本",type:"basic",qType:"calc",text:"（　）に入る正しいbe動詞を書きなさい。\nYou （　） kind.",answer:"are",judge:"text"},
+  {id:11,topic:"be動詞",sub:"be動詞の基本",type:"basic",qType:"calc",text:"（　）に入る正しいbe動詞を書きなさい。\nHe （　） my friend.",answer:"is",judge:"text"},
+  {id:12,topic:"be動詞",sub:"be動詞の基本",type:"basic",qType:"calc",text:"（　）に入る正しいbe動詞を書きなさい。\nShe （　） a teacher.",answer:"is",judge:"text"},
+  {id:13,topic:"be動詞",sub:"be動詞の基本",type:"basic",qType:"calc",text:"\"I am Ken.\" を日本語にしなさい。",answer:"私はケンです。",judge:"text"},
+  {id:14,topic:"be動詞",sub:"be動詞の否定文",type:"basic",qType:"calc",text:"\"I am a doctor.\" を否定文にしなさい。",answer:"I am not a doctor.",judge:"text",hint:"am の後に not を入れます"},
+  {id:15,topic:"be動詞",sub:"be動詞の否定文",type:"basic",qType:"calc",text:"\"She is busy.\" を否定文にしなさい。",answer:"She is not busy.",judge:"text"},
+  {id:16,topic:"be動詞",sub:"be動詞の疑問文",type:"basic",qType:"calc",text:"\"You are from Japan.\" を疑問文にしなさい。",answer:"Are you from Japan?",judge:"text",hint:"be動詞を文頭に出します"},
+  {id:17,topic:"be動詞",sub:"be動詞の疑問文",type:"basic",qType:"calc",text:"\"Are you a student?\" に Yes で答えなさい。",answer:"Yes, I am.",judge:"text"},
+  {id:18,topic:"be動詞",sub:"be動詞の疑問文",type:"basic",qType:"calc",text:"\"Is he your brother?\" に No で答えなさい。",answer:"No, he is not.",judge:"text"},
+  {id:19,topic:"be動詞",sub:"be動詞の基本",type:"applied",qType:"desc",text:"「彼女は親切ではありません。彼女は厳しいです。」を英語で書きなさい。",answer:"She is not kind. She is strict.",judge:"text"},
+  {id:20,topic:"be動詞",sub:"be動詞の疑問文",type:"applied",qType:"desc",text:"「あなたは疲れていますか？」「はい、そうです。」を英語で書きなさい。",answer:"Are you tired? Yes, I am.",judge:"text"},
+  {id:21,topic:"一般動詞",sub:"一般動詞の基本",type:"basic",qType:"calc",text:"「私は音楽が好きです。」を英語で書きなさい。",answer:"I like music.",judge:"text"},
+  {id:22,topic:"一般動詞",sub:"一般動詞の基本",type:"basic",qType:"calc",text:"「私は毎日英語を勉強します。」を英語で書きなさい。",answer:"I study English every day.",judge:"text"},
+  {id:23,topic:"一般動詞",sub:"一般動詞の基本",type:"basic",qType:"calc",text:"\"I play soccer.\" を日本語にしなさい。",answer:"私はサッカーをします。",judge:"text"},
+  {id:24,topic:"一般動詞",sub:"三単現のs",type:"basic",qType:"calc",text:"（　）に入る正しい形を書きなさい。\nShe （　） English. （like）",answer:"likes",judge:"text",hint:"主語が三人称単数のとき動詞にsをつけます"},
+  {id:25,topic:"一般動詞",sub:"三単現のs",type:"basic",qType:"calc",text:"（　）に入る正しい形を書きなさい。\nHe （　） to school. （go）",answer:"goes",judge:"text",hint:"goはgoesになります"},
+  {id:26,topic:"一般動詞",sub:"三単現のs",type:"basic",qType:"calc",text:"（　）に入る正しい形を書きなさい。\nShe （　） math. （study）",answer:"studies",judge:"text",hint:"子音+yはiesになります"},
+  {id:27,topic:"一般動詞",sub:"一般動詞の否定文",type:"basic",qType:"calc",text:"\"I like cats.\" を否定文にしなさい。",answer:"I do not like cats.",judge:"text",hint:"do not を動詞の前に入れます"},
+  {id:28,topic:"一般動詞",sub:"一般動詞の否定文",type:"basic",qType:"calc",text:"\"He plays tennis.\" を否定文にしなさい。",answer:"He does not play tennis.",judge:"text",hint:"三単現はdoes notを使います"},
+  {id:29,topic:"一般動詞",sub:"一般動詞の疑問文",type:"basic",qType:"calc",text:"\"You like dogs.\" を疑問文にしなさい。",answer:"Do you like dogs?",judge:"text"},
+  {id:30,topic:"一般動詞",sub:"一般動詞の疑問文",type:"basic",qType:"calc",text:"\"Do you play basketball?\" に Yes で答えなさい。",answer:"Yes, I do.",judge:"text"},
+  {id:31,topic:"一般動詞",sub:"一般動詞の疑問文",type:"basic",qType:"calc",text:"\"Does she study math?\" に No で答えなさい。",answer:"No, she does not.",judge:"text"},
+  {id:32,topic:"一般動詞",sub:"一般動詞の基本",type:"applied",qType:"desc",text:"「ケンは毎朝朝食を食べます。」を英語で書きなさい。",answer:"Ken eats breakfast every morning.",judge:"text"},
+  {id:33,topic:"一般動詞",sub:"三単現のs",type:"applied",qType:"desc",text:"「彼女は音楽を聴きません。」を英語で書きなさい。",answer:"She does not listen to music.",judge:"text"},
+  {id:34,topic:"一般動詞",sub:"一般動詞の疑問文",type:"applied",qType:"desc",text:"「あなたのお父さんは車を持っていますか？」「はい、持っています。」を英語で書きなさい。",answer:"Does your father have a car? Yes, he does.",judge:"text"},
+  {id:35,topic:"複数形",sub:"名詞の複数形",type:"basic",qType:"calc",text:"\"book\" の複数形を書きなさい。",answer:"books",judge:"text"},
+  {id:36,topic:"複数形",sub:"名詞の複数形",type:"basic",qType:"calc",text:"\"box\" の複数形を書きなさい。",answer:"boxes",judge:"text",hint:"x,s,sh,chで終わる語はesをつけます"},
+  {id:37,topic:"複数形",sub:"名詞の複数形",type:"basic",qType:"calc",text:"\"city\" の複数形を書きなさい。",answer:"cities",judge:"text",hint:"子音+yはiesになります"},
+  {id:38,topic:"複数形",sub:"名詞の複数形",type:"basic",qType:"calc",text:"\"child\" の複数形を書きなさい。",answer:"children",judge:"text",hint:"不規則変化です"},
+  {id:39,topic:"複数形",sub:"名詞の複数形",type:"basic",qType:"calc",text:"\"I have a dog.\" を「2匹」に書き換えなさい。",answer:"I have two dogs.",judge:"text"},
+  {id:40,topic:"複数形",sub:"名詞の複数形",type:"applied",qType:"desc",text:"\"I have three （　）.\" ( knife の複数形 ) を完成させなさい。",answer:"knives",judge:"text",hint:"feで終わる語はvesになります"},
+  {id:41,topic:"疑問詞",sub:"疑問詞の基本",type:"basic",qType:"calc",text:"「これは何ですか？」を英語で書きなさい。",answer:"What is this?",judge:"text"},
+  {id:42,topic:"疑問詞",sub:"疑問詞の基本",type:"basic",qType:"calc",text:"「あなたはどこに住んでいますか？」を英語で書きなさい。",answer:"Where do you live?",judge:"text"},
+  {id:43,topic:"疑問詞",sub:"疑問詞の基本",type:"basic",qType:"calc",text:"「あなたはいつ勉強しますか？」を英語で書きなさい。",answer:"When do you study?",judge:"text"},
+  {id:44,topic:"疑問詞",sub:"疑問詞の基本",type:"basic",qType:"calc",text:"「あなたはなぜ英語が好きなのですか？」を英語で書きなさい。",answer:"Why do you like English?",judge:"text"},
+  {id:45,topic:"疑問詞",sub:"疑問詞の基本",type:"basic",qType:"calc",text:"「あなたはどのように学校へ行きますか？」を英語で書きなさい。",answer:"How do you go to school?",judge:"text"},
+  {id:46,topic:"疑問詞",sub:"whoの疑問文",type:"basic",qType:"calc",text:"「あの男性は誰ですか？」を英語で書きなさい。",answer:"Who is that man?",judge:"text"},
+  {id:47,topic:"疑問詞",sub:"疑問詞の基本",type:"applied",qType:"desc",text:"\"I go to school by bike.\" に対して「どのように」たずねる疑問文を書きなさい。",answer:"How do you go to school?",judge:"text"},
+  {id:48,topic:"疑問詞",sub:"疑問詞の基本",type:"applied",qType:"desc",text:"\"She lives in Osaka.\" に対して「どこに」たずねる疑問文を書きなさい。",answer:"Where does she live?",judge:"text"},
+  {id:49,topic:"代名詞",sub:"人称代名詞",type:"basic",qType:"calc",text:"（　）に入る正しい語を書きなさい。\nThis is Tom's bag. This is （　） bag.",answer:"his",judge:"text",hint:"Tomは男性なのでhisを使います"},
+  {id:50,topic:"代名詞",sub:"人称代名詞",type:"basic",qType:"calc",text:"（　）に入る正しい語を書きなさい。\nShe is my friend. I like （　）.",answer:"her",judge:"text",hint:"動詞の目的語になる形（目的格）を使います"},
+  {id:51,topic:"代名詞",sub:"人称代名詞",type:"basic",qType:"calc",text:"\"me\" の主格（〜は・が）を書きなさい。",answer:"I",judge:"text"},
+  {id:52,topic:"代名詞",sub:"人称代名詞",type:"basic",qType:"calc",text:"\"they\" の目的格（〜を・に）を書きなさい。",answer:"them",judge:"text"},
+  {id:53,topic:"代名詞",sub:"人称代名詞",type:"applied",qType:"desc",text:"「これは私の本です。それはあなたのものです。」を英語で書きなさい。",answer:"This is my book. That is yours.",judge:"text"},
+  {id:54,topic:"can",sub:"canの基本",type:"basic",qType:"calc",text:"「私は速く走ることができます。」を英語で書きなさい。",answer:"I can run fast.",judge:"text"},
+  {id:55,topic:"can",sub:"canの基本",type:"basic",qType:"calc",text:"\"She can play the piano.\" を日本語にしなさい。",answer:"彼女はピアノを弾くことができます。",judge:"text"},
+  {id:56,topic:"can",sub:"canの否定文",type:"basic",qType:"calc",text:"\"I can swim.\" を否定文にしなさい。",answer:"I cannot swim.",judge:"text",hint:"can の後に not を入れます"},
+  {id:57,topic:"can",sub:"canの疑問文",type:"basic",qType:"calc",text:"\"You can speak French.\" を疑問文にしなさい。",answer:"Can you speak French?",judge:"text"},
+  {id:58,topic:"can",sub:"canの疑問文",type:"basic",qType:"calc",text:"\"Can he cook?\" に Yes で答えなさい。",answer:"Yes, he can.",judge:"text"},
+  {id:59,topic:"can",sub:"canの基本",type:"applied",qType:"desc",text:"「あなたは日本語を話せますか？」「はい、少し話せます。」を英語で書きなさい。",answer:"Can you speak Japanese? Yes, I can a little.",judge:"text"},
+  {id:60,topic:"can",sub:"canの基本",type:"applied",qType:"desc",text:"「ケンはギターを弾くことができません。」を英語で書きなさい。",answer:"Ken cannot play the guitar.",judge:"text"},
+  {id:61,topic:"命令文",sub:"命令文の基本",type:"basic",qType:"calc",text:"「静かにしなさい。」を英語で書きなさい。",answer:"Be quiet.",judge:"text",hint:"命令文はbe動詞または動詞の原形で始めます"},
+  {id:62,topic:"命令文",sub:"命令文の基本",type:"basic",qType:"calc",text:"\"Stand up.\" を日本語にしなさい。",answer:"立ちなさい。",judge:"text"},
+  {id:63,topic:"命令文",sub:"命令文の否定",type:"basic",qType:"calc",text:"「走ってはいけません。」を英語で書きなさい。",answer:"Don't run.",judge:"text",hint:"Don't + 動詞の原形"},
+  {id:64,topic:"命令文",sub:"命令文の基本",type:"applied",qType:"desc",text:"「ここで日本語を話してはいけません。英語を話しなさい。」を英語で書きなさい。",answer:"Don't speak Japanese here. Speak English.",judge:"text"},
+  {id:65,topic:"一般動詞",sub:"一般動詞の基本",type:"applied",qType:"desc",text:"「私の姉は東京に住んでいます。彼女は毎日電車で通勤します。」を英語で書きなさい。",answer:"My sister lives in Tokyo. She goes to work by train every day.",judge:"text"},
+  {id:66,topic:"be動詞",sub:"be動詞の基本",type:"basic",qType:"calc",text:"\"They are my classmates.\" を日本語にしなさい。",answer:"彼らは私のクラスメートです。",judge:"text"},
+  {id:67,topic:"疑問詞",sub:"howの疑問文",type:"basic",qType:"calc",text:"「あなたは何冊本を持っていますか？」を英語で書きなさい。",answer:"How many books do you have?",judge:"text",hint:"How many + 複数名詞 + do you...?"},
+  {id:68,topic:"複数形",sub:"名詞の複数形",type:"basic",qType:"calc",text:"\"leaf\" の複数形を書きなさい。",answer:"leaves",judge:"text",hint:"feで終わる語はvesになります"},
+  {id:69,topic:"can",sub:"canの基本",type:"basic",qType:"calc",text:"「私を手伝ってもらえますか？」を英語で書きなさい。",answer:"Can you help me?",judge:"text"},
+  {id:70,topic:"代名詞",sub:"人称代名詞",type:"basic",qType:"calc",text:"（　）に入る正しい語を書きなさい。\nThis is my pencil. It is （　）.",answer:"mine",judge:"text",hint:"所有代名詞（〜のもの）を使います"},
+  {id:71,topic:"一般動詞",sub:"三単現のs",type:"basic",qType:"calc",text:"\"He （　） TV every night.\" （watch）",answer:"watches",judge:"text",hint:"ch で終わる語はesをつけます"},
+  {id:72,topic:"疑問詞",sub:"whatの疑問文",type:"applied",qType:"desc",text:"「あなたの好きな科目は何ですか？」「数学です。」を英語で書きなさい。",answer:"What is your favorite subject? It is math.",judge:"text"},
+  {id:73,topic:"be動詞",sub:"be動詞の疑問文",type:"applied",qType:"desc",text:"「あなたたちは同じクラスですか？」「いいえ、違います。」を英語で書きなさい。",answer:"Are you in the same class? No, we are not.",judge:"text"},
+  {id:74,topic:"命令文",sub:"命令文の基本",type:"applied",qType:"desc",text:"「毎日英語を練習しなさい。そうすれば上手になります。」を英語で書きなさい。",answer:"Practice English every day and you will get better.",judge:"text"},
+  {id:75,topic:"一般動詞",sub:"一般動詞の疑問文",type:"applied",qType:"desc",text:"「彼は何時に起きますか？」「彼は6時に起きます。」を英語で書きなさい。",answer:"What time does he get up? He gets up at six.",judge:"text"},
+];
+
+const LS_KEY='englishmaster_v1';
+function loadState(){try{const s=localStorage.getItem(LS_KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
+function saveState(){try{localStorage.setItem(LS_KEY,JSON.stringify({weights,usedIds,weekData,sessionCount,totalCorrect}));}catch(e){}}
+const saved=loadState();
+let weights=saved?.weights||{"基本表現":1,"be動詞":1,"一般動詞":1,"複数形":1,"疑問詞":1,"代名詞":1,"can":1,"命令文":1};
+let usedIds=saved?.usedIds||[];
+let weekData=saved?.weekData||{days:[],topicStats:{}};
+let sessionCount=saved?.sessionCount||0;
+let totalCorrect=saved?.totalCorrect||0;
+let questions=[],idx=0,results=[];
+
+function norm(s){
+  return String(s).replace(/\s+/g,' ').replace(/[．。]/g,'.').replace(/[、，]/g,',')
+    .replace(/[！]/g,'!').replace(/[？]/g,'?')
+    .replace(/can not/gi,'cannot').replace(/do not/gi,"don't")
+    .replace(/does not/gi,"doesn't").replace(/is not/gi,"isn't").replace(/are not/gi,"aren't")
+    .toLowerCase().trim();
+}
+function judge(q,raw){
+  const u=norm(raw),c=norm(q.answer);
+  if(u===c||u.replace(/\s/g,'')===c.replace(/\s/g,'')) return true;
+  const v={"don't":"do not","doesn't":"does not","isn't":"is not","aren't":"are not","can't":"cannot","i'm":"i am","you're":"you are","he's":"he is","she's":"she is"};
+  let uv=u,cv=c;
+  Object.entries(v).forEach(([k,val])=>{uv=uv.replace(new RegExp(k,'g'),val);cv=cv.replace(new RegExp(k,'g'),val);});
+  return uv===cv||uv.replace(/\s/g,'')===cv.replace(/\s/g,'');
+}
+function feedback(q,ok){
+  const OK=[`Great! ${q.sub} がしっかり身についているね！`,`正解！ ${q.sub} は得意になってきたね。`,`Excellent! 正しく書けたね。`,`完璧！ 英語の語順をしっかり覚えているね。`,`Well done! すごい！`];
+  const NG=[`惜しい！ 正解は「${q.answer}」です。${q.hint?'ヒント：'+q.hint:q.sub+' をもう一度確認してみよう。'}`,`もう少し！ 答えは「${q.answer}」だよ。${q.sub} の使い方を振り返ってみよう。`,`次は必ず書けるよ！ 正解は「${q.answer}」です。`,`間違いは学びのチャンス！ 正解は「${q.answer}」。${q.hint||'声に出して読むと覚えやすいよ。'}`,`ドンマイ！ 正解は「${q.answer}」です。似た問題で練習しよう。`];
+  return (ok?OK:NG)[Math.floor(Math.random()*(ok?OK:NG).length)];
+}
+function selectQuestions(){
+  const b=QB.filter(q=>q.type==='basic'),a=QB.filter(q=>q.type==='applied');
+  function pick(pool,n){const s=pool.map(q=>({q,score:(weights[q.topic]||1)*(usedIds.includes(q.id)?0.3:1)*(0.5+Math.random()*0.5)}));s.sort((a,b)=>b.score-a.score);return s.slice(0,n).map(x=>x.q);}
+  return [...pick(b,10),...pick(a,10)];
+}
+function showScreen(name){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(name).classList.add('active');window.scrollTo(0,0);}
+function showAnalysis(){showScreen('analysis');renderAnalysis();}
+function updatePortalStats(){
+  const chips=document.getElementById('stat-chips');
+  if(sessionCount>0){
+    chips.style.display='flex';
+    const tA=weekData.days.reduce((s,d)=>s+d.total,0),tO=weekData.days.reduce((s,d)=>s+d.correct,0);
+    document.getElementById('st-session').textContent=sessionCount;
+    document.getElementById('st-rate').textContent=tA>0?Math.round(tO/tA*100)+'%':'--%';
+    document.getElementById('st-total').textContent=totalCorrect;
+  }
+}
+const MSGS=['問題を準備中...','今日の問題を選んでいます...','Let\'s go!'];
+let msgTimer;
+function startSession(){
+  showScreen('loading');let mi=0;
+  document.getElementById('loading-msg').textContent=MSGS[0];
+  clearInterval(msgTimer);
+  msgTimer=setInterval(()=>{mi=(mi+1)%MSGS.length;document.getElementById('loading-msg').textContent=MSGS[mi];},1200);
+  setTimeout(()=>{clearInterval(msgTimer);questions=selectQuestions();idx=0;results=[];renderQuestion();showScreen('quiz');},800);
+}
+function stopSession(){showScreen('portal');updatePortalStats();}
+function renderQuestion(){
+  const q=questions[idx],total=questions.length;
+  document.getElementById('prog-fill').style.width=((idx+1)/total*100)+'%';
+  document.getElementById('quiz-num').textContent=(idx+1)+'/'+total;
+  document.getElementById('remain-num').textContent=Math.max(0,total-idx-1);
+  document.getElementById('tag-name').textContent=q.topic;
+  document.getElementById('tag-type').textContent=q.type==='basic'?'基礎':'応用';
+  document.getElementById('q-text').textContent=q.text;
+  const hEl=document.getElementById('q-hint');
+  if(q.hint){hEl.textContent='💡 '+q.hint;hEl.style.display='block';}else hEl.style.display='none';
+  const eEl=document.getElementById('q-example');
+  if(q.example){eEl.textContent='📝 例：'+q.example;eEl.style.display='block';}else eEl.style.display='none';
+  const iE=document.getElementById('input-eng'),iD=document.getElementById('input-desc');
+  if(q.qType==='calc'){iE.style.display='block';iD.style.display='none';iE.value='';iE.disabled=false;setTimeout(()=>iE.focus(),200);}
+  else{iE.style.display='none';iD.style.display='block';iD.value='';iD.disabled=false;setTimeout(()=>iD.focus(),200);}
+  document.getElementById('btn-submit').style.display='flex';
+  document.getElementById('btn-next').style.display='none';
+  document.getElementById('overlay').classList.remove('show');
+  const qb=document.querySelector('.quiz-body');if(qb)qb.scrollTop=0;
+}
+function getAnswer(){const q=questions[idx];return q.qType==='calc'?document.getElementById('input-eng').value.trim():document.getElementById('input-desc').value.trim();}
+function submitAnswer(){
+  const raw=getAnswer();if(!raw)return;
+  const q=questions[idx],ok=judge(q,raw);
+  results.push({question:q,answer:raw,isCorrect:ok});
+  document.getElementById('input-eng').disabled=true;document.getElementById('input-desc').disabled=true;
+  document.getElementById('fb-icon').textContent=ok?'🌟':'💪';
+  document.getElementById('fb-title').textContent=ok?'正解！':'不正解';
+  document.getElementById('fb-title').className='fb-title '+(ok?'ok':'ng');
+  document.getElementById('fb-correct').textContent=q.answer;
+  document.getElementById('fb-user').textContent=raw;
+  document.getElementById('fb-comment').textContent=feedback(q,ok);
+  document.getElementById('fb-next-btn').textContent=idx+1>=questions.length?'結果を見る 🎉':'次の問題へ →';
+  document.getElementById('overlay').classList.add('show');
+}
+function nextQuestion(){document.getElementById('overlay').classList.remove('show');if(idx+1>=questions.length)finishSession();else{idx++;renderQuestion();}}
+function finishSession(){
+  const allRes=results,newCorrect=allRes.filter(r=>r.isCorrect).length,total=allRes.length;
+  const today=new Date().toLocaleDateString('ja-JP',{weekday:'short'});
+  const days=weekData.days,ex=days.find(d=>d.label===today);
+  if(ex){ex.correct+=newCorrect;ex.total+=total;}else days.push({label:today,correct:newCorrect,total});
+  if(days.length>7)days.shift();
+  allRes.forEach(r=>{const t=r.question.topic;if(!weekData.topicStats[t])weekData.topicStats[t]={correct:0,total:0};weekData.topicStats[t].total++;if(r.isCorrect)weekData.topicStats[t].correct++;});
+  const ts={};allRes.forEach(r=>{const t=r.question.topic;if(!ts[t])ts[t]={c:0,n:0};ts[t].n++;if(r.isCorrect)ts[t].c++;});
+  Object.keys(ts).forEach(t=>{const rate=ts[t].c/ts[t].n;weights[t]=parseFloat(Math.max(0.5,Math.min(3.0,1+(1-rate)*1.5)).toFixed(2));});
+  usedIds=[...new Set([...usedIds,...allRes.map(r=>r.question.id)])].slice(-40);
+  sessionCount++;totalCorrect+=newCorrect;saveState();
+  const rate=Math.round(newCorrect/total*100);
+  const bOk=allRes.filter(r=>r.question.type==='basic'&&r.isCorrect).length,bTot=allRes.filter(r=>r.question.type==='basic').length;
+  const aOk=allRes.filter(r=>r.question.type==='applied'&&r.isCorrect).length,aTot=allRes.filter(r=>r.question.type==='applied').length;
+  document.getElementById('res-rate').textContent=rate;document.getElementById('res-sub').textContent=newCorrect+'/'+total+'問正解';
+  document.getElementById('res-basic').textContent=bOk+'/'+bTot;document.getElementById('res-applied').textContent=aOk+'/'+aTot;document.getElementById('res-wrong').textContent=total-newCorrect;
+  const emoji=rate>=80?'🌟':rate>=60?'👍':rate>=40?'💪':'📚';
+  const msg=rate>=80?'Excellent!':rate>=60?'Good job!':rate>=40?'Keep trying!':'Every day counts!';
+  document.getElementById('r-emoji').textContent=emoji;document.getElementById('r-title').textContent=msg;showScreen('result');
+}
+function renderAnalysis(){
+  const days=weekData.days,dEl=document.getElementById('day-bars');
+  if(days.length===0)dEl.innerHTML='<div class="no-data">まだデータがありません</div>';
+  else{const maxT=Math.max(...days.map(d=>d.total),1);dEl.innerHTML=days.map(d=>`<div class="day-col"><div class="day-bar" style="height:${Math.max(4,d.correct/maxT*64)}px"></div><div class="day-lbl">${d.label}</div></div>`).join('');}
+  const ts=weekData.topicStats,tEl=document.getElementById('topic-bars');
+  if(Object.keys(ts).length===0)tEl.innerHTML='<div class="no-data">まだデータがありません</div>';
+  else tEl.innerHTML=Object.entries(ts).map(([t,s])=>{const r=Math.round(s.correct/s.total*100);return`<div class="tb-row"><div class="tb-name">${t}</div><div class="tb-track"><div class="tb-ok" style="width:${r}%"></div><div class="tb-ng" style="left:${r}%;width:${100-r}%"></div></div><div class="tb-pct">${r}%</div></div>`;}).join('');
+  document.getElementById('wt-list').innerHTML=Object.entries(weights).map(([t,w])=>{const lv=w>=1.8?'hi':w>=1.2?'md':'lo',lb=w>=1.8?'重点強化中 🔥':w>=1.2?'通常 +':'得意 ✓';return`<div class="wt-row"><div class="wt-name">${t}</div><div class="wt-badge wt-${lv}">${lb}</div></div>`;}).join('');
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('quiz').classList.contains('active'))
+    if(!document.getElementById('overlay').classList.contains('show')){const q=questions[idx];if(q?.qType==='calc')submitAnswer();}
+});
+updatePortalStats();
+</script>
+</body>
+</html>
